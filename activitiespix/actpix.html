@@ -1,0 +1,86 @@
+ <!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banco Etec</title>
+</head>
+
+<body>
+    <h1>Banco da Etec</h1>
+    <h2>Faça um PIX para outra pessoa</h2>
+    <div id="dadosConta"></div>
+    <div id="dadosTransferencia"></div>
+
+    <script>
+        const contas = [];
+
+        function cadastrarConta() {
+            const cpf = Number(prompt("Digite o CPF:"));
+            const nome = prompt("Digite o nome:");
+            let saldo;
+
+            do {
+                saldo = Number(prompt("Digite o saldo:"));
+                if (isNaN(saldo) || saldo <= 0) {
+                    alert("Saldo inválido. Digite novamente.");
+                }
+            } while (isNaN(saldo) || saldo <= 0);
+
+            const conta = { cpf, nome, saldo };
+            contas.push(conta);
+
+            alert("Conta cadastrada com sucesso!\n" + exibirDadosConta(conta));
+        }
+
+        function exibirDadosConta(conta) {
+            return `CPF: ${conta.cpf} | Nome: ${conta.nome} | Saldo: R$ ${conta.saldo.toFixed(2)}`;
+        }
+
+        function realizarPix() {
+            const pagante = escolherConta("pagante");
+            const destinatario = escolherConta("destinatário");
+
+            const valorTransferencia = prompt("Digite o valor da transferência:");
+            if (valorTransferencia > 0 && valorTransferencia <= pagante.saldo) {
+                pagante.saldo -= valorTransferencia;
+                destinatario.saldo += Number(valorTransferencia);
+
+                alert("Transferência realizada com sucesso!");
+                exibirDetalhesTransferencia(pagante, destinatario, valorTransferencia);
+            } else {
+                alert("Transferência não realizada. Valor inválido ou saldo insuficiente.");
+            }
+        }
+
+        function escolherConta(tipo) {
+            let escolha;
+            do {
+                escolha = Number(prompt(`Escolha a conta do ${tipo}:\n${exibirContas()}`));
+            } while (isNaN(escolha) || escolha <= 0 || escolha > contas.length);
+
+            return contas[escolha - 1];
+        }
+
+        function exibirContas() {
+            return contas.map((conta, index) => `[${index + 1}] ${exibirDadosConta(conta)}`).join('\n');
+        }
+
+        function exibirDetalhesTransferencia(pagante, destinatario, valor) {
+            const detalhesTransferencia = `
+                <p>Conta Pagante: ${exibirDadosConta(pagante)}</p>
+                <p>Conta Destinatário: ${exibirDadosConta(destinatario)}</p>
+                <p>Valor de Transferência: R$ ${valor}</p>
+            `;
+            document.getElementById("dadosTransferencia").innerHTML = detalhesTransferencia;
+        }
+
+        // Exemplo de uso:
+        cadastrarConta();
+        cadastrarConta();
+        realizarPix();
+    </script>
+</body>
+
+</html>
